@@ -1,0 +1,1266 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominando los Sistemas de Ecuaciones: Un Examen Completo</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        svg: {
+          fontCache: 'global'
+        },
+        chtml: {
+          displayAlign: 'left'
+        }
+      };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5; --primary-dark: #4338ca; --primary-light: #eef2ff;
+            --secondary-color: #64748b; --success-color: #10b981; --success-light: #ecfdf5;
+            --danger-color: #ef4444; --danger-light: #fef2f2; --warning-color: #f59e0b;
+            --light-bg: #f1f5f9; --border-color: #cbd5e1; --text-color: #1e293b;
+            --white: #ffffff; --progress-color-start: #4f46e5; --progress-color-end: #10b981;
+        }
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        body {
+            font-family: 'Inter', sans-serif; display: flex; justify-content: center;
+            align-items: flex-start; min-height: 100vh;
+            background: linear-gradient(-45deg, #6d28d9, #4f46e5, #d946ef, #10b981);
+            background-size: 400% 400%; animation: moveGradient 20s ease infinite;
+            margin: 0; padding: 2em 1em;
+        }
+        .main-wrapper { width: 100%; max-width: 900px; position: relative; }
+        .card { background: var(--white); padding: 2.5em; border-radius: 16px; box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); animation: fadeIn 0.5s ease-out; }
+        .hidden { display: none; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDownFade { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #category-selection-screen h2 { font-size: 2em; color: var(--primary-color); text-align: center; margin-top: 0; margin-bottom: 0.5em; }
+        #category-selection-screen .subtitle { text-align: center; color: var(--secondary-color); margin-bottom: 2em; font-size: 1.1em; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+        #category-list { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5em; margin-bottom: 2.5em; }
+        .category-item { background-color: var(--white); border: 2px solid var(--border-color); border-radius: 12px; padding: 1.5em; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .category-item:hover:not(.completed) { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(79,70,229,0.1); border-color: var(--primary-color); }
+        .category-item h3 { margin: 0 0 0.5em 0; color: var(--primary-dark); font-size: 1.25em; }
+        .category-item p { margin: 0; color: var(--secondary-color); font-size: 0.95em; line-height: 1.5; }
+        .category-item.completed { border-color: var(--success-color); background-color: var(--success-light); cursor: default; }
+        .category-item.completed:hover { transform: none; box-shadow: none; }
+        .category-item.completed::before { content: '✔'; font-weight: bold; position: absolute; top: 1em; right: 1.2em; color: var(--success-color); font-size: 1.5em; }
+        .category-item .progress-info { margin-top: 1em; font-weight: bold; color: var(--success-color); }
+        #overall-progress-container { margin-top: 2em; text-align: center; border-top: 1px solid var(--border-color); padding-top: 2em;}
+        #overall-progress-container h3 { margin: 0 0 0.5em 0; color: var(--text-color); }
+        #overall-score { font-size: 1.2em; color: var(--secondary-color); }
+        #show-final-results-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--success-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; margin-top: 1em; }
+        #show-final-results-btn:hover { background-color: #059669; }
+
+        /* --- New Summary Card Styles --- */
+        #summary-container h2 { font-size: 1.8em; margin-top: 0; margin-bottom: 0.2em; color: var(--primary-color); }
+        #summary-container .subtitle { color: var(--secondary-color); margin-top: 0; margin-bottom: 2em; }
+        .summary-section { margin-bottom: 2.5em; }
+        .summary-section h3 { font-size: 1.2em; font-weight: 700; color: var(--text-color); margin-bottom: 1em; padding-bottom: 0.5em; border-bottom: 2px solid var(--primary-light); display: flex; align-items: center; gap: 0.75em; }
+        .summary-key-concepts { line-height: 1.7; color: #374151; }
+        .summary-key-concepts p, .summary-key-concepts ul, .summary-key-concepts ol { margin-bottom: 1em; }
+        .summary-key-concepts ul, .summary-key-concepts ol { padding-left: 20px; }
+        .summary-key-concepts strong { color: var(--primary-dark); }
+        .summary-key-concepts mjx-container[display="true"] { background-color: rgba(79, 70, 229, 0.05); padding: 1em; border-radius: 8px; margin: 1em 0; }
+        .summary-tips-list { list-style: none; padding: 0; }
+        .summary-tips-list li { display: flex; align-items: flex-start; gap: 1em; margin-bottom: 1em; background-color: var(--primary-light); padding: 1em; border-radius: 8px; }
+        .summary-tips-list li::before { content: '💡'; font-size: 1.2em; line-height: 1.5; }
+        #summary-continue-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s; display: block; width: 100%; }
+        #summary-continue-btn:hover { background-color: var(--primary-dark); transform: scale(1.02); }
+
+        /* --- Main Quiz & Final Screen Styles --- */
+        #quiz-header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5em; }
+        #problem-header { color: var(--text-color); font-weight: 600; font-size: 1.1em; }
+        #score-counter { color: var(--success-color); font-weight: 600; font-size: 1em; background-color: var(--success-light); padding: 5px 10px; border-radius: 8px; }
+        #progress-container { width: 100%; background-color: #e2e8f0; border-radius: 10px; margin-bottom: 1.5em; height: 12px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--progress-color-start), var(--progress-color-end)); border-radius: 10px; transition: width 0.6s cubic-bezier(0.4, 0.0, 0.2, 1); }
+        #question-container { font-size: 1.15em; line-height: 1.7; margin: 1em 0; color: var(--text-color); text-align: justify; }
+        #question-container table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+        #question-container th, #question-container td { border: 1px solid var(--border-color); padding: 12px; text-align: center; }
+        #question-container th { background-color: var(--light-bg); font-weight: 600; }
+        #graph-container, .option-graph-canvas-container { width: 100%; max-width: 450px; margin: 1.5em auto; border-radius: 8px; overflow: hidden; }
+        #graph-container svg, .option-graph-canvas-container svg {max-width: 100%; height: auto; display: block; margin: 0 auto; background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);}
+        #options-container { margin-top: 1.5em; display: flex; flex-direction: column; gap: 0.75em; }
+        .option-button { display: flex; align-items: center; gap: 1em; width: 100%; padding: 14px 18px; font-size: 1.05em; text-align: left; background-color: var(--white); border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; }
+        .option-button:hover:not(.disabled) { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .option-button .label { font-weight: bold; color: var(--primary-color); }
+        .option-button .value { flex-grow: 1; }
+        .option-button.correct { border-color: var(--success-color); background-color: var(--success-light); }
+        .option-button.correct .label { color: var(--success-color); }
+        .option-button.incorrect { border-color: var(--danger-color); background-color: var(--danger-light); }
+        .option-button.incorrect .label { color: var(--danger-color); }
+        .option-button.disabled { cursor: not-allowed; }
+        .options-grid-with-graphs { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; }
+        .option-block-graph { padding: 1em; border: 2px solid var(--border-color); border-radius: 12px; cursor: pointer; transition: all 0.2s ease-in-out; background-color: var(--white); }
+        .option-block-graph:hover:not(.disabled) { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .option-block-graph.correct { border-color: var(--success-color)!important; background-color: var(--success-light); }
+        .option-block-graph.incorrect { border-color: var(--danger-color)!important; background-color: var(--danger-light); }
+        .option-block-graph .label { font-size: 1.2em; font-weight: bold; margin-bottom: 0.5em; color: var(--primary-color); }
+        #feedback-container { margin-top: 1.5em; padding: 1.2em; border-radius: 12px; display: none; animation: slideDownFade 0.4s ease-out; line-height: 1.7; text-align: justify; }
+        #feedback-container.correct { background-color: var(--success-light); border-left: 5px solid var(--success-color); }
+        #feedback-container.incorrect { background-color: var(--danger-light); border-left: 5px solid var(--danger-color); }
+        #feedback-title { display: flex; align-items: center; font-size: 1.2em; font-weight: 700; margin-bottom: 0.5em; }
+        #feedback-title svg { width: 24px; height: 24px; margin-right: 8px; }
+        #feedback-container.correct #feedback-title { color: var(--success-color); }
+        #feedback-container.incorrect #feedback-title { color: var(--danger-color); }
+        #navigation-container { display: flex; justify-content: flex-end; margin-top: 2em; }
+        #next-button, .nav-btn { padding: 12px 30px; font-size: 1em; font-weight: bold; color: var(--white); background-color: var(--primary-color); border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+        #next-button { visibility: hidden; opacity: 0; }
+        #next-button.visible { visibility: visible; opacity: 1; }
+        #next-button:hover, .nav-btn:hover { background-color: var(--primary-dark); }
+        #final-screen { text-align: center; animation: fadeIn 0.5s ease-out; }
+        #final-screen h2 { font-size: 2.2em; color: var(--primary-color); font-weight: 700; }
+        #final-screen p { font-size: 1.2em; }
+        .highlight { color: var(--primary-color); font-weight: 700; }
+        @media (max-width: 680px) { .options-grid-with-graphs { grid-template-columns: 1fr; } #category-list { grid-template-columns: 1fr; }}
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div id="category-selection-screen" class="card">
+            <h2>Dominando los Sistemas de Ecuaciones: Un Examen Completo</h2>
+            <p class="subtitle">Selecciona un tema para comenzar. Cada sección se enfoca en una habilidad clave. ¡Completa todas las secciones para demostrar tu maestría!</p>
+            <ul id="category-list"></ul>
+            <div id="overall-progress-container" class="hidden">
+                <h3>Progreso General</h3>
+                <p id="overall-score"></p>
+                <button id="show-final-results-btn" class="nav-btn hidden">Ver Resumen Final</button>
+            </div>
+        </div>
+
+        <div id="quiz-wrapper" class="hidden">
+            <div id="summary-container" class="card hidden">
+                <h2 id="summary-title"></h2>
+                <p class="subtitle">Prepárate para la siguiente sección.</p>
+
+                <div class="summary-section">
+                    <h3>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open" style="color: var(--primary-dark);"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                      Conceptos Clave y Fórmulas
+                    </h3>
+                    <div id="summary-key-concepts" class="summary-key-concepts"></div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap" style="color: var(--warning-color);"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                      Consejos para esta Sección
+                    </h3>
+                    <ul id="summary-tips-list" class="summary-tips-list"></ul>
+                </div>
+                
+                <button id="summary-continue-btn">Comenzar Problemas</button>
+            </div>
+
+            <div id="quiz-container" class="hidden card">
+                <div id="progress-container"><div id="progress-bar"></div></div>
+                <div id="quiz-header-bar">
+                    <div id="problem-header"></div>
+                    <div id="score-counter"></div>
+                </div>
+                <div id="question-container"></div>
+                <div id="graph-container"></div>
+                <div id="options-container"></div>
+                <div id="feedback-container"></div>
+                <div id="navigation-container"><button id="next-button">Siguiente →</button></div>
+            </div>
+
+            <div id="final-screen" class="hidden card">
+                <h2 id="final-title"></h2>
+                <p id="final-message"></p>
+                <p id="final-score" style="font-size: 2.5em; font-weight: bold; margin: 0.5em 0;"></p>
+                <p id="final-percentage" style="font-size: 1.5em;"></p>
+                <button id="back-to-menu-btn" class="nav-btn">Volver al Menú</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function renderMath() {
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        setTimeout(() => window.MathJax.typesetPromise(), 0);
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const icons = {
+            check: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>`,
+            x: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`
+        };
+        const summaries = {
+  "ai-cat-1755053449610-0": {
+    "title": "Conceptos Fundamentales y Clasificación de Sistemas",
+    "key_concepts_html": "<p>Esta sección se enfoca en comprender la naturaleza de los sistemas de ecuaciones lineales y cómo determinar el tipo de solución que poseen (única, infinitas o ninguna). Es crucial identificar las condiciones que deben cumplir los coeficientes para cada caso. Para un sistema de la forma:</p>\\[ \\begin{cases} a_1x + b_1y = c_1 \\\\ a_2x + b_2y = c_2 \\end{cases} \\]<ul><li>Para una <strong>solución única</strong>, se debe cumplir que \\(\\frac{a_1}{a_2} \\neq \\frac{b_1}{b_2}\\). Esto significa que las líneas se intersecan en un solo punto.</li><li>Para <strong>infinitas soluciones</strong> (o sistema compatible indeterminado), se cumple que \\(\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = \\frac{c_1}{c_2}\\). Las líneas son coincidentes.</li><li>Para <strong>ninguna solución</strong> (o sistema incompatible), se cumple que \\(\\frac{a_1}{a_2} = \\frac{b_1}{b_2} \\neq \\frac{c_1}{c_2}\\). Las líneas son paralelas y distintas.</li></ul><p>Recuerda que estas condiciones son clave para resolver problemas que piden encontrar valores de parámetros que determinen el tipo de solución.</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1755053449610-1": {
+    "title": "Métodos de Resolución y Manipulación Algebraica",
+    "key_concepts_html": "<p>Aquí pondrás en práctica tus habilidades para resolver sistemas de ecuaciones lineales usando los métodos principales. La clave es la <strong>manipulación algebraica</strong> precisa para aislar las variables.</p><strong>Métodos Comunes:</strong><ul><li><strong>Sustitución:</strong> Despeja una variable de una ecuación y sustitúyela en la otra.</li><li><strong>Eliminación (o Reducción):</strong> Multiplica una o ambas ecuaciones por constantes para que los coeficientes de una variable sean opuestos, luego súmalas para eliminar esa variable.</li><li><strong>Igualación:</strong> Despeja la misma variable de ambas ecuaciones e iguala las expresiones resultantes.</li></ul><p>Es fundamental manejar coeficientes de diferentes tipos (fracciones, decimales periódicos, radicales o parámetros) y simplificar expresiones algebraicas complejas para llegar a la solución correcta. Recuerda convertir decimales periódicos a fracciones (ej., \\(0.\\overline{3} = 3/9 = 1/3\\)).</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1755053449610-2": {
+    "title": "Sistemas de Ecuaciones No Lineales y Geométricos",
+    "key_concepts_html": "<p>Esta sección presenta desafíos que van más allá de los sistemas lineales estándar. Aquí encontrarás problemas que requieren:</p><ul><li><strong>Identificación de patrones algebraicos:</strong> Reconocer y aplicar identidades notables, como la suma o diferencia de cubos (ej., \\(a^3 - b^3 = (a-b)(a^2+ab+b^2)\\)), para simplificar sistemas no lineales.</li><li><strong>Modelado a partir de geometría:</strong> Traducir relaciones geométricas (como las propiedades de ángulos entre líneas paralelas) en un sistema de ecuaciones lineales. A menudo, necesitarás recordar propiedades básicas de geometría para establecer la segunda ecuación necesaria.</li><li><strong>Análisis avanzado de sistemas con parámetros:</strong> Evaluar afirmaciones sobre la naturaleza de las soluciones de un sistema donde los parámetros influyen directamente en la estructura y dependencias de las ecuaciones.</li></ul><p>La capacidad de transformar un problema a una forma resoluble es clave en este nivel.</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  },
+  "ai-cat-1755053449610-3": {
+    "title": "Problemas de Aplicación y Modelado",
+    "key_concepts_html": "<p>Esta es la sección de aplicación práctica, donde la habilidad principal es traducir escenarios del mundo real en un sistema de ecuaciones matemáticas y luego resolverlo. Cada problema requiere:</p><ol><li><strong>Definir claramente las variables:</strong> Asigna letras a las cantidades desconocidas.</li><li><strong>Establecer las ecuaciones:</strong> Formula una o más ecuaciones basadas en la información proporcionada en el problema. Busca palabras clave que indiquen relaciones (suma, diferencia, \"el doble de\", \"la mitad de\", porcentajes, etc.).</li><li><strong>Resolver el sistema:</strong> Aplica los métodos de resolución que dominas.</li><li><strong>Interpretar la solución:</strong> Asegúrate de que tu respuesta tenga sentido en el contexto del problema original.</li></ol><p>Prepárate para problemas de edades, cantidades, mezclas, rendimiento de trabajo o incluso manipulación de números de varias cifras (donde un número \\(pq\\) se expresa como \\(10p + q\\)).</p>",
+    "tips": [
+      "Presta atención a los detalles en los enunciados y diagramas.",
+      "Recuerda revisar las fórmulas y conceptos clave relacionados antes de empezar.",
+      "Usa la explicación para entender tus errores y reforzar tu aprendizaje.",
+      "¡Mucha suerte en esta sección!"
+    ]
+  }
+};
+        const allProblemsData = [
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Para que un sistema de ecuaciones lineales de la forma $\\begin{cases} a_1x + b_1y = c_1 \\ a_2x + b_2y = c_2 \\ \\end{cases}$ tenga una solución única, la relación entre los coeficientes de $x$ y los coeficientes de $y$ no debe ser la misma. Es decir, las pendientes de las dos líneas deben ser diferentes. Matemáticamente, esto se expresa como $\\frac{a_1}{a_2} \\neq \\frac{b_1}{b_2}$.</li><li>En nuestro sistema $\\begin{cases} 2x - ty = 5 \\ 4x - y = 15 \\ \\end{cases}$, identificamos los coeficientes: $a_1 = 2$, $b_1 = -t$, $a_2 = 4$, $b_2 = -1$.</li><li>Aplicamos la condición para una solución única: $\\frac{2}{4} \\neq \\frac{-t}{-1}$.</li><li>Simplificamos ambos lados de la inecuación: $\\frac{1}{2} \\neq t$.</li><li>Por lo tanto, la condición que debe cumplir $t$ para que el sistema tenga una solución única es $t \\neq \\frac{1}{2}$.</li></ol>",
+    "options": [
+      {
+        "text": "$t \\neq -\\frac{1}{2}$"
+      },
+      {
+        "text": "$t = -\\frac{1}{2}$"
+      },
+      {
+        "text": "$t \\neq 1$"
+      },
+      {
+        "text": "$t \\neq \\frac{1}{2}$"
+      },
+      {
+        "text": "$t = \\frac{1}{2}$"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "En el sistema $$\\begin{cases} 2x - ty = 5 \\\\ 4x - y = 15 \\end{cases}$$ ¿Qué condición debe cumplir $t$ para que tenga solución única?",
+    "originalQuestionNumber": "21",
+    "internalId": "q-1755052646217-0.9794680768878391",
+    "id": "q-ai-cat-1755053449610-0-0"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Para que un sistema de ecuaciones lineales de la forma \n\\[\\begin{cases} a_1x + b_1y = c_1 \\\\ a_2x + b_2y = c_2 \\end{cases}\n]\ntenga una única solución, los coeficientes deben cumplir la condición \n\\[\\frac{a_1}{a_2} \\neq \\frac{b_1}{b_2}\n]\n.</li><li>En el sistema dado \n\\[\\begin{cases} kx - 9y = 6 \\\\ -4x + ky = 8 \\end{cases}\n]\n, tenemos \n\\(a_1 = k\\)\n, \n\\(b_1 = -9\\)\n, \n\\(a_2 = -4\\)\n y \n\\(b_2 = k\\)\n.</li><li>Aplicamos la condición de solución única: \n\\[\\frac{k}{-4} \\neq \\frac{-9}{k}\n]\n.</li><li>Multiplicamos en cruz: \n\\(k \\cdot k \\neq (-4) \\cdot (-9)\\)\n, lo que resulta en \n\\(k^2 \\neq 36\\)\n.</li><li>Tomamos la raíz cuadrada de ambos lados: \n\\(k \\neq \\pm\\sqrt{36}\\)\n.</li><li>Por lo tanto, \n\\(k \\neq \\pm6\\)\n.</li></ol>",
+    "options": [
+      {
+        "text": "\\(k = 6\\)"
+      },
+      {
+        "text": "\\(k = -6\\)"
+      },
+      {
+        "text": "\\(k = 6 \\lor k = -6\\)"
+      },
+      {
+        "text": "\\(k \\neq \\pm6\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page.png",
+    "text": "Dado el sistema \n\\[\\begin{cases} kx - 9y = 6 \\\\ -4x + ky = 8 \\end{cases}\n\\]\n ¿Cuál es el valor de \n\\(k\\)\n, para que el sistema tenga una única solución?",
+    "originalQuestionNumber": "1",
+    "internalId": "q-1755052653056-0.4783475696419661",
+    "id": "q-ai-cat-1755053449610-0-1"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Un sistema de ecuaciones lineales tiene solución única, infinitas soluciones o ninguna solución. Para un sistema de la forma: <br> \\(A_1x + B_1y = C_1\\)<br> \\(A_2x + B_2y = C_2\\)</li><li>El sistema no tiene solución (es decir, las líneas son paralelas y distintas) si se cumple que \\(\\frac{A_1}{A_2} = \\frac{B_1}{B_2} \\neq \\frac{C_1}{C_2}\\).</li><li>La ecuación dada es \\(3x - 2y = 3p\\). Aquí, \\(A_1 = 3\\), \\(B_1 = -2\\), \\(C_1 = 3p\\).</li><li>Analicemos cada opción:<ul><li><b>A) \\(2x - 3y = 3p\\):</b> \\(\\frac{3}{2} \\neq \\frac{-2}{-3}\\). Las pendientes son diferentes, por lo tanto, el sistema tiene una solución única.</li><li><b>B) \\(6x - 4y = 6p\\):</b> \\(\\frac{3}{6} = \\frac{1}{2}\\), \\(\\frac{-2}{-4} = \\frac{1}{2}\\), \\(\\frac{3p}{6p} = \\frac{1}{2}\\) (asumiendo \\(p \\neq 0\\)). Como todas las razones son iguales, las dos ecuaciones representan la misma línea, lo que significa infinitas soluciones.</li><li><b>C) \\(6x - 4y = 3p\\):</b> \\(\\frac{3}{6} = \\frac{1}{2}\\), \\(\\frac{-2}{-4} = \\frac{1}{2}\\). Sin embargo, \\(\\frac{3p}{3p} = 1\\) (asumiendo \\(p \\neq 0\\)). Aquí, \\(\\frac{A_1}{A_2} = \\frac{B_1}{B_2} = \\frac{1}{2}\\) pero \\(\\frac{C_1}{C_2} = 1\\). Dado que \\(\\frac{1}{2} \\neq 1\\), este es el caso donde las líneas son paralelas pero distintas, lo que resulta en un sistema sin solución. (Si \\(p=0\\), la ecuación original es \\(3x-2y=0\\) y la opción C es \\(6x-4y=0\\), que son la misma línea. Sin embargo, en problemas de este tipo, se asume el caso general donde \\(p \\neq 0\\) a menos que se especifique lo contrario, lo que lleva a la ausencia de solución).</li><li><b>D) \\(x - y = 3p\\):</b> \\(\\frac{3}{1} \\neq \\frac{-2}{-1}\\). Las pendientes son diferentes, por lo tanto, el sistema tiene una solución única.</li><li><b>E) \\(x + y = 3p\\):</b> \\(\\frac{3}{1} \\neq \\frac{-2}{1}\\). Las pendientes son diferentes, por lo tanto, el sistema tiene una solución única.</li></ul></li><li>La opción C es la única que forma un sistema sin solución con la ecuación dada.</li></ol>",
+    "options": [
+      {
+        "text": "\\(2x - 3y = 3p\\)"
+      },
+      {
+        "text": "\\(6x - 4y = 6p\\)"
+      },
+      {
+        "text": "\\(6x - 4y = 3p\\)"
+      },
+      {
+        "text": "\\(x - y = 3p\\)"
+      },
+      {
+        "text": "\\(x + y = 3p\\)"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "Dada la ecuación \\(3x - 2y = 3p\\), cuyas incógnitas son \\(x\\) e \\(y\\). ¿Con cuál de las siguientes ecuaciones, se forma un sistema sin solución?",
+    "originalQuestionNumber": "16",
+    "internalId": "q-1755052664130-0.38970134164638726",
+    "id": "q-ai-cat-1755053449610-0-2"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Un sistema de ecuaciones lineales no tiene solución si las líneas que representan las ecuaciones son paralelas y distintas.</li><li>Para que las líneas sean paralelas, la relación de los coeficientes de las variables debe ser la misma. Es decir, para el sistema \\(\\begin{cases} Ax + By = C \\\\ Dx + Ey = F \\end{cases}\\), las líneas son paralelas si \\(\\frac{A}{D} = \\frac{B}{E}\\).</li><li>Para el sistema dado \\(\\begin{cases} px + 3y = 5 \\\\ qx + 2y = 7 \nA\n\n\n\\end{cases}\\), la condición de paralelismo es \\(\\frac{p}{q} = \\frac{3}{2}\\).</li><li>Además, para que no tenga solución, la relación de los términos constantes debe ser diferente: \\(\\frac{3}{2} \\neq \\frac{5}{7}\\), lo cual es cierto.</li><li>Despejando \\(p\\) de la condición de paralelismo, obtenemos \\(p = \\frac{3q}{2}\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(p = \\frac{3q}{2}\\)"
+      },
+      {
+        "text": "\\(p = \\frac{2q}{3}\\)"
+      },
+      {
+        "text": "\\(p = q\\)"
+      },
+      {
+        "text": "\\(p = 2q\\)"
+      },
+      {
+        "text": "\\(p = -\\frac{2q}{3}\\)"
+      }
+    ],
+    "sourceFileName": "quiz_algebra_functions_page10.png",
+    "text": "¿Qué relación deben cumplir \\(p\\) y \\(q\\) en el sistema \\(\\begin{cases} px + 3y = 5 \\\\ qx + 2y = 7 \\end{cases}\\), para que este no tenga solución?",
+    "originalQuestionNumber": "22",
+    "internalId": "q-1755052648562-0.6861584556199054",
+    "id": "q-ai-cat-1755053449610-0-3"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>Un sistema de ecuaciones lineales no tiene solución cuando las líneas que representan son paralelas y distintas.</li><li>Para que dos ecuaciones lineales \\( A_1x + B_1y = C_1 \\) y \\( A_2x + B_2y = C_2 \\) sean paralelas, la relación entre sus coeficientes de \\( x \\) y \\( y \\) debe ser la misma: \\( \\frac{A_1}{A_2} = \\frac{B_1}{B_2} \\).</li><li>Para que el sistema no tenga soluciones (líneas paralelas distintas), además se debe cumplir que la relación sea diferente para los términos constantes: \\( \\frac{A_1}{A_2} = \\frac{B_1}{B_2} \\neq \\frac{C_1}{C_2} \\).</li><li>Aplicando esto al sistema dado: \\( kx - 7y = 9 \\) y \\( -5x + 7y = q \\).</li><li>Para la condición de paralelismo: \\( \\frac{k}{-5} = \\frac{-7}{7} \\Rightarrow \\frac{k}{-5} = -1 \\Rightarrow k = (-1) \\times (-5) \\Rightarrow k = 5 \\).</li><li>Para la condición de no solución (distintas): \\( \\frac{k}{-5} = \\frac{-7}{7} \\neq \\frac{9}{q} \\). Como ya sabemos que \\( \\frac{-7}{7} = -1 \\), la condición se convierte en: \\( -1 \\neq \\frac{9}{q} \\). Esto implica que \\( q \\neq 9 \\times (-1) \\), es decir, \\( q \\neq -9 \\).</li><li>Por lo tanto, los valores para que el sistema no tenga soluciones son \\( k = 5 \\) y \\( q \\neq -9 \\).</li></ol>",
+    "options": [
+      {
+        "text": "\\( k = 5 \\) y \\( q \\neq 9 \\)"
+      },
+      {
+        "text": "\\( k = 5 \\) y \\( q \\neq -9 \\)"
+      },
+      {
+        "text": "\\( k = -5 \\) y \\( q \\neq 9 \\)"
+      },
+      {
+        "text": "\\( k = -5 \\) y \\( q \\neq -9 \\)"
+      },
+      {
+        "text": "\\( k = 5 \\) y \\( q = -9 \\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1",
+    "text": "Dado el sistema de ecuación \\[ \\begin{cases} kx - 7y = 9 \\\\ -5x + 7y = q \\end{cases} \\] ¿Cuáles son los valores de \\( k \\) y \\( q \\) para que el sistema no tenga soluciones?",
+    "originalQuestionNumber": "8",
+    "internalId": "q-1755052661951-0.276418126410385",
+    "id": "q-ai-cat-1755053449610-0-4"
+  },
+  {
+    "correct": 4,
+    "explanation": "<ol><li>Para que un sistema de ecuaciones lineales tenga infinitas soluciones, las razones entre los coeficientes correspondientes deben ser iguales: \\(\\frac{A_1}{A_2} = \\frac{B_1}{B_2} = \\frac{C_1}{C_2}\\).</li><li>Dado el sistema \\(\\begin{cases} 5x - 3y = 2 \\ px - 6y = q \\end{cases}\\), identificamos los coeficientes: \\(A_1=5, B_1=-3, C_1=2\\) y \\(A_2=p, B_2=-6, C_2=q\\).</li><li>Establecemos las razones: \\(\\frac{5}{p} = \\frac{-3}{-6} = \\frac{2}{q}\\).</li><li>Primero, simplificamos la razón central: \\(\\frac{-3}{-6} = \\frac{1}{2}\\).</li><li>Ahora, igualamos la primera razón a \\(\\frac{1}{2}\\) para encontrar \\(p\\): \\(\\frac{5}{p} = \\frac{1}{2} \\Rightarrow p = 5 \\times 2 = 10\\).</li><li>Luego, igualamos la última razón a \\(\\frac{1}{2}\\) para encontrar \\(q\\): \\(\\frac{1}{2} = \\frac{2}{q} \\Rightarrow q = 2 \\times 2 = 4\\).</li><li>Finalmente, calculamos \\(p + q = 10 + 4 = 14\\).</li></ol>",
+    "options": [
+      {
+        "text": "-14"
+      },
+      {
+        "text": "-6"
+      },
+      {
+        "text": "6"
+      },
+      {
+        "text": "10"
+      },
+      {
+        "text": "14"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Si el sistema \\(\\begin{cases} 5x - 3y = 2 \\ px - 6y = q \\end{cases}\\) tiene infinitas soluciones. ¿Cuál es el valor de \\(p + q\\)?",
+    "originalQuestionNumber": "24",
+    "internalId": "q-1755052649438-0.011087857199471252",
+    "id": "q-ai-cat-1755053449610-0-5"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Reorganizar el sistema de ecuaciones a la forma estándar \\(Ax + By = C\\): Ecuación 1: \\((1+q)x + 2y = 2q+1\\). Ecuación 2: \\((1+2q)x + 6y = 3q-4\\).</li><li>Para que un sistema de ecuaciones lineales no tenga solución, las pendientes de las líneas deben ser iguales (o los coeficientes de \\(x\\) e \\(y\\) deben ser proporcionales), pero la relación con los términos constantes debe ser diferente. Es decir, \\(\\frac{A_1}{A_2} = \\frac{B_1}{B_2} \\neq \\frac{C_1}{C_2}\\).</li><li>Igualar la proporción de los coeficientes de \\(x\\) e \\(y\\): \\(\\frac{1+q}{1+2q} = \\frac{2}{6} \\Rightarrow \\frac{1+q}{1+2q} = \\frac{1}{3}\\).</li><li>Resolver para \\(q\\): \\(3(1+q) = 1(1+2q) \\Rightarrow 3+3q = 1+2q \\Rightarrow q = -2\\).</li><li>Verificar que para este valor de \\(q\\), la proporción con los términos constantes no es igual: Cuando \\(q = -2\\), \\(\\frac{C_1}{C_2} = \\frac{2(-2)+1}{3(-2)-4} = \\frac{-4+1}{-6-4} = \\frac{-3}{-10} = \\frac{3}{10}\\). Como \\(\\frac{1}{3} \\neq \\frac{3}{10}\\), se confirma que para \\(q = -2\\) el sistema no tiene solución.</li></ol>",
+    "options": [
+      {
+        "text": "\\(-\\frac{7}{3}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(-\\frac{2}{5}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(-2\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(1\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(\\frac{13}{7}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "¿Cuál es el valor de \\(q\\) para que el sistema de ecuaciones \\(\\begin{cases} x + qx + 2y = 2q + 1 \\\\ x + 2qx + 6y = 3q - 4 \\end{cases}\\), de incógnitas \\(x\\) e \\(y\\) no tenga solución?",
+    "originalQuestionNumber": "18",
+    "internalId": "q-1755052663175-0.11088830582273068",
+    "id": "q-ai-cat-1755053449610-0-6"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Dado el sistema de ecuaciones: \\(\\begin{cases} \\frac{p}{5} + \\frac{q}{3} = -\\frac{2}{15} \\ \\frac{p}{3} - \\frac{q}{2} = \\frac{5}{6} \\end{cases}\\).</li><li>Para la primera ecuación, multiplicamos por el mínimo común múltiplo de los denominadores (15) para eliminar las fracciones: \\(15\\left(\\frac{p}{5}\\right) + 15\\left(\\frac{q}{3}\\right) = 15\\left(-\\frac{2}{15}\\right) \\Rightarrow 3p + 5q = -2\\) (Ecuación 1').</li><li>Para la segunda ecuación, multiplicamos por el mínimo común múltiplo de los denominadores (6) para eliminar las fracciones: \\(6\\left(\\frac{p}{3}\\right) - 6\\left(\\frac{q}{2}\\right) = 6\\left(\\frac{5}{6}\\right) \\Rightarrow 2p - 3q = 5\\) (Ecuación 2').</li><li>Ahora tenemos un sistema simplificado: \\(\\begin{cases} 3p + 5q = -2 \\ 2p - 3q = 5 \\end{cases}\\).</li><li>Para resolver por eliminación, multiplicamos la Ecuación 1' por 2 y la Ecuación 2' por 3 para igualar los coeficientes de \\(p\\): \\(2(3p + 5q) = 2(-2) \\Rightarrow 6p + 10q = -4\\) y \\(3(2p - 3q) = 3(5) \\Rightarrow 6p - 9q = 15\\).</li><li>Restamos la segunda nueva ecuación de la primera nueva ecuación: \\((6p + 10q) - (6p - 9q) = -4 - 15 \\Rightarrow 19q = -19\\).</li><li>Resolvemos para \\(q\\): \\(q = -\\frac{19}{19} = -1\\).</li><li>Sustituimos el valor de \\(q = -1\\) en la Ecuación 1': \\(3p + 5(-1) = -2 \\Rightarrow 3p - 5 = -2\\).</li><li>Resolvemos para \\(p\\): \\(3p = -2 + 5 \\Rightarrow 3p = 3 \\Rightarrow p = 1\\).</li><li>Por lo tanto, los valores que satisfacen al sistema son \\(p = 1\\) y \\(q = -1\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(p = 1, q = -1\\)"
+      },
+      {
+        "text": "\\(p = -1, q = 1\\)"
+      },
+      {
+        "text": "\\(p = 1, q = 2\\)"
+      },
+      {
+        "text": "\\(p = 2, q = -1\\)"
+      },
+      {
+        "text": "\\(p = 1, q = -2\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Según el siguiente sistema \\(\\begin{cases} \\frac{p}{5} + \\frac{q}{3} = -\\frac{2}{15} \\ \\frac{p}{3} - \\frac{q}{2} = \\frac{5}{6} \\end{cases}\\) ¿Cuáles son los valores de \\(p\\) y \\(q\\) que satisfacen al sistema?",
+    "originalQuestionNumber": "25",
+    "internalId": "q-1755052649438-0.8725861663167247",
+    "id": "q-ai-cat-1755053449610-1-0"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>El sistema dado es \n\\[\\begin{cases} px + qy + 1 = 0 \\\\ qx + py - 1 = 0 \n\\end{cases}\n]\n. Reescribimos las ecuaciones para que los términos constantes estén en el lado derecho: \n\\[\\begin{cases} px + qy = -1 \\quad (1) \\\\ qx + py = 1 \\quad (2) \n\\end{cases}\n]\n.</li><li>Para encontrar el valor de \n\\(y\\)\n, podemos usar el método de eliminación. Multiplicamos la ecuación (1) por \n\\(q\\)\n y la ecuación (2) por \n\\(p\\)\n para igualar los coeficientes de \n\\(x\\)\n: \n\\[\\begin{cases} q(px + qy) = q(-1) \\implies pqx + q^2y = -q \\\\ p(qx + py) = p(1) \\implies pqx + p^2y = p \n\\end{cases}\n]\n.</li><li>Restamos la segunda ecuación modificada de la primera: \n\\[(pqx + q^2y) - (pqx + p^2y) = -q - p\n]\n. Esto simplifica a \n\\(q^2y - p^2y = -(q + p)\\)\n.</li><li>Factorizamos \n\\(y\\)\n del lado izquierdo: \n\\(y(q^2 - p^2) = -(q + p)\\)\n.</li><li>Sabemos que \n\\(q^2 - p^2 = (q - p)(q + p)\\)\n (diferencia de cuadrados). Entonces, la ecuación se convierte en \n\\(y(q - p)(q + p) = -(q + p)\\)\n.</li><li>Dado que \n\\(p \\neq -q\\)\n, sabemos que \n\\(q + p \\neq 0\\)\n. Por lo tanto, podemos dividir ambos lados por \n\\(-(q + p)\\)\n: \n\\[y(p - q) = 1\n]\n.</li><li>Finalmente, despejamos \n\\(y\\)\n: \n\\[y = \\frac{1}{p - q}\n]\n.</li></ol>",
+    "options": [
+      {
+        "text": "\\(\\frac{-1}{p-q}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{p+q}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{p-q}\\)"
+      },
+      {
+        "text": "\\(\\frac{-1}{p+q}\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page.png",
+    "text": "Considera el sistema \n\\[\\begin{cases} px + qy + 1 = 0 \\\\ qx + py - 1 = 0 \\end{cases}\n]\n , en \n\\(x\\)\n e \n\\(y\\)\n, con \n\\(p\\)\n y \n\\(q\\)\n números reales distintos entre sí, distintos de \n\\(0\\)\n y \n\\(p \\neq -q\\)\n. ¿Cuál es el valor de \n\\(y\\)\n, en términos de \n\\(p\\)\n y \n\\(q\\)\n?",
+    "originalQuestionNumber": "2",
+    "internalId": "q-1755052653056-0.014540668080907149",
+    "id": "q-ai-cat-1755053449610-1-1"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Convertir los números decimales periódicos a fracciones: $0.\\overline{3} = \\frac{1}{3}$, $0.\\overline{7} = \\frac{7}{9}$, $0.\\overline{2} = \\frac{2}{9}$, $0.\\overline{9} = 1$.</li><li>Calcular los valores de $x$ e $y$: $x = \\frac{1/3}{7/9} = \\frac{1}{3} \\times \\frac{9}{7} = \\frac{3}{7}$ y $y = \\frac{2/9}{1} = \\frac{2}{9}$.</li><li>Sustituir estos valores en el sistema: $a\\left(\\frac{3}{7}\\right) - b\\left(\\frac{2}{9}\\right) = 1$ y $a\\left(\\frac{3}{7}\\right) + b\\left(\\frac{2}{9}\\right) = -1$.</li><li>Sumar ambas ecuaciones: $2a\\left(\\frac{3}{7}\\right) = 0 \\Rightarrow \\frac{6a}{7} = 0 \\Rightarrow a = 0$.</li><li>Sustituir $a = 0$ en la primera ecuación: $-b\\left(\\frac{2}{9}\\right) = 1 \\Rightarrow -2b = 9 \\Rightarrow b = -\\frac{9}{2}$.</li><li>Calcular $a - b = 0 - \\left(-\\frac{9}{2}\\right) = \\frac{9}{2}$.</li></ol>",
+    "options": [
+      {
+        "text": "$0$"
+      },
+      {
+        "text": "$-\\frac{9}{2}$"
+      },
+      {
+        "text": "$\\frac{9}{2}$"
+      },
+      {
+        "text": "$\\frac{3}{7}$"
+      },
+      {
+        "text": "$\\frac{2}{9}$"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "El par de números $x = \\frac{0.\\overline{3}}{0.\\overline{7}}$ e $y = \\frac{0.\\overline{2}}{0.\\overline{9}}$ es la solución del sistema \\[\\begin{cases} ax - by = 1 \\\\ ax + by = -1 \\end{cases}\\] . ¿Cuál es el valor de $(a - b)$?",
+    "originalQuestionNumber": "10",
+    "internalId": "q-1755052673580-0.13286628598395012",
+    "id": "q-ai-cat-1755053449610-1-2"
+  },
+  {
+    "correct": 4,
+    "explanation": "<ol><li>Convertimos los números decimales periódicos a fracciones: $0,\\overline{3} = \\frac{3}{9} = \\frac{1}{3}$ y $0,\\overline{5} = \\frac{5}{9}$. Además, $1,\\overline{6} = 1 + \\frac{6}{9} = 1 + \\frac{2}{3} = \\frac{5}{3}$.</li><li>Reescribimos las ecuaciones utilizando estas fracciones: La ecuación (1) se convierte en $\\frac{1}{3}x + \\frac{5}{9}y = 3$. Multiplicando por 9 para eliminar los denominadores, obtenemos $3x + 5y = 27$.</li><li>La ecuación (2) se convierte en $x + \\frac{5}{3}y = 9$. Multiplicando por 3 para eliminar el denominador, obtenemos $3x + 5y = 27$.</li><li>Observamos que ambas ecuaciones, (1) y (2), son idénticas: $3x + 5y = 27$. Esto significa que el sistema no tiene dos ecuaciones independientes, sino que ambas describen la misma línea en el plano cartesiano.</li><li>Dado que tenemos solo una ecuación lineal con dos variables (x e y), y esta ecuación tiene infinitas soluciones, no es posible determinar un valor único para $x$ ni para $y$, y por lo tanto, no se puede determinar un valor numérico único para $x+y$. Las condiciones de que $x$ e $y$ son números positivos y distintos tampoco son suficientes para encontrar una solución única.</li></ol>",
+    "options": [
+      {
+        "text": "(1) Por si sola"
+      },
+      {
+        "text": "(2) Por si sola"
+      },
+      {
+        "text": "Ambas juntas (1) y (2)"
+      },
+      {
+        "text": "Cada una por si sola, (1) y (2)"
+      },
+      {
+        "text": "Se requiere información adicional"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "Sean $x$ e $y$ números positivos y distintos. ¿Se puede determinar el valor numérico de $x + y$? (1) $0,\\overline{3}x + 0,\\overline{5}y = 3$ (2) $x + 1,\\overline{6}y = 9",
+    "originalQuestionNumber": "20",
+    "internalId": "q-1755052646217-0.4762973628602366",
+    "id": "q-ai-cat-1755053449610-1-3"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Resolver el sistema de ecuaciones para \\(x\\) e \\(y\\): Sumar las dos ecuaciones: \\((x+y) + (x-y) = \\sqrt{a} + \\sqrt{b} \\Rightarrow 2x = \\sqrt{a} + \\sqrt{b} \\Rightarrow x = \\frac{\\sqrt{a} + \\sqrt{b}}{2}\\). Restar la segunda ecuación de la primera: \\((x+y) - (x-y) = \\sqrt{a} - \\sqrt{b} \\Rightarrow 2y = \\sqrt{a} - \\sqrt{b} \\Rightarrow y = \\frac{\\sqrt{a} - \\sqrt{b}}{2}\\).</li><li>Calcular los recíprocos de \\(x\\) e \\(y\\): \\(\\frac{1}{x} = \\frac{2}{\\sqrt{a} + \\sqrt{b}}\\) y \\(\\frac{1}{y} = \\frac{2}{\\sqrt{a} - \\sqrt{b}}\\).</li><li>Sumar los recíprocos: \\(\\frac{1}{x} + \\frac{1}{y} = \\frac{2}{\\sqrt{a} + \\sqrt{b}} + \\frac{2}{\\sqrt{a} - \\sqrt{b}}\\).</li><li>Encontrar un denominador común, que es \\((\\sqrt{a} + \\sqrt{b})(\\sqrt{a} - \\sqrt{b}) = a - b\\): \\(\\frac{1}{x} + \\frac{1}{y} = \\frac{2(\\sqrt{a} - \\sqrt{b}) + 2(\\sqrt{a} + \\sqrt{b})}{a - b} \\Rightarrow \\frac{1}{x} + \\frac{1}{y} = \\frac{2\\sqrt{a} - 2\\sqrt{b} + 2\\sqrt{a} + 2\\sqrt{b}}{a - b} \\Rightarrow \\frac{1}{x} + \\frac{1}{y} = \\frac{4\\sqrt{a}}{a - b}\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(\\frac{4\\sqrt{a}}{a-b}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(\\frac{2\\sqrt{a}}{a-b}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(\\frac{\\sqrt{a}}{4(a-b)}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "\\(\\frac{\\sqrt{a}}{4(a+b)}\\)",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "Dado el sistema de ecuaciones \\(\\begin{cases} x + y = \\sqrt{a} \\\\ x - y = \\sqrt{b} \\end{cases}\\), de incógnitas \\(x\\) e \\(y\\), con \\(a > 0\\) y \\(b > 0\\). ¿Cuál es el valor de la suma de los recíprocos de \\(x\\) e \\(y\\)?",
+    "originalQuestionNumber": "19",
+    "internalId": "q-1755052663175-0.3512246166009131",
+    "id": "q-ai-cat-1755053449610-1-4"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Tenemos el sistema de ecuaciones: (1) \\(ax - by = 1\\) y (2) \\(-bx + ay = 1\\).</li><li>Para eliminar \\(y\\) y encontrar \\(x\\), multiplicamos la ecuación (1) por \\(a\\) y la ecuación (2) por \\(b\\):<br/>\\(a(ax - by) = a \\Rightarrow a^2x - aby = a\\)<br/>\\(b(-bx + ay) = b \\Rightarrow -b^2x + aby = b\\)</li><li>Sumamos las dos nuevas ecuaciones:<br/>\\((a^2x - aby) + (-b^2x + aby) = a + b\\)<br/>\\((a^2 - b^2)x = a + b\\)</li><li>Despejamos \\(x\\):<br/>\\(x = \\frac{a+b}{a^2 - b^2}\\). Sabiendo que \\(a^2 - b^2 = (a-b)(a+b)\\), podemos simplificar:<br/>\\(x = \\frac{a+b}{(a-b)(a+b)}\\) Como \\(a \\neq -b\\), \\(a+b \\neq 0\\), por lo tanto \\(x = \\frac{1}{a-b}\\).</li><li>Para eliminar \\(x\\) y encontrar \\(y\\), multiplicamos la ecuación (1) por \\(b\\) y la ecuación (2) por \\(a\\):<br/>\\(b(ax - by) = b \\Rightarrow abx - b^2y = b\\)<br/>\\(a(-bx + ay) = a \\Rightarrow -abx + a^2y = a\\)</li><li>Sumamos las dos nuevas ecuaciones:<br/>\\((abx - b^2y) + (-abx + a^2y) = b + a\\)<br/>\\((a^2 - b^2)y = a + b\\)</li><li>Despejamos \\(y\\):<br/>\\(y = \\frac{a+b}{a^2 - b^2} = \\frac{1}{(a-b)}\\) (por la misma simplificación anterior).</li><li>Finalmente, calculamos el producto \\(x \\cdot y\\):<br/>\\(x \\cdot y = \\left(\\frac{1}{a-b}\\right) \\cdot \\left(\\frac{1}{a-b}\\right) = \\frac{1}{(a-b)^2}\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(\\frac{1}{a^2-b^2}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{a-b}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{(a-b)^2}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{a+b}\\)"
+      },
+      {
+        "text": "\\(\\frac{1}{(a+b)^2}\\)"
+      }
+    ],
+    "sourceFileName": "quiz_algebra_functions_page10.png",
+    "text": "De acuerdo con el sistema \\(\\begin{cases} ax - by = 1 \\\\ -bx + ay = 1 \\end{cases}\\) donde \\(a \\neq \\pm b\\), ¿Cuál es el valor de \\(x \\cdot y\\)?",
+    "originalQuestionNumber": "23",
+    "internalId": "q-1755052648562-0.3917440806571072",
+    "id": "q-ai-cat-1755053449610-1-5"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Dado el sistema: $2ax + 2by = 18$ (Ec. 1) y $6ax - 2by = 14$ (Ec. 2).</li><li>Sumar Ec. 1 y Ec. 2: $(2ax + 2by) + (6ax - 2by) = 18 + 14 \\Rightarrow 8ax = 32$.</li><li>Despejar $ax$: $ax = \\frac{32}{8} \\Rightarrow ax = 4$.</li><li>Sustituir $ax = 4$ en Ec. 1: $2(4) + 2by = 18 \\Rightarrow 8 + 2by = 18 \\Rightarrow 2by = 10$.</li><li>Despejar $by$: $by = \\frac{10}{2} \\Rightarrow by = 5$.</li><li>Se pide la expresión $(ab(x+y))$. Sabemos que $x = \\frac{4}{a}$ y $y = \\frac{5}{b}$.</li><li>Sustituir $x$ e $y$ en la expresión: $ab\\left(\\frac{4}{a} + \\frac{5}{b}\\right)$.</li><li>Distribuir $ab$: $ab\\left(\\frac{4}{a}\\right) + ab\\left(\\frac{5}{b}\\right) = 4b + 5a$.</li></ol>",
+    "options": [
+      {
+        "text": "$5a + 4b$"
+      },
+      {
+        "text": "$a + 8b$"
+      },
+      {
+        "text": "$4a + 5b$"
+      },
+      {
+        "text": "$10a - b$"
+      },
+      {
+        "text": "$13a + 4b$"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Dado el sistema \\[\\begin{cases} 2ax + 2by = 18 \\\\ 6ax - 2by = 14 \\end{cases}\\] con $x$ e $y$ las soluciones del sistema, $a \\neq 0$ y $b \\neq 0$. ¿Cuál de las siguientes expresiones equivale a $((ab(x + y)))$?",
+    "originalQuestionNumber": "11",
+    "internalId": "q-1755052673580-0.8630963701052778",
+    "id": "q-ai-cat-1755053449610-1-6"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Dado que \\(L_1 // L_2\\), podemos aplicar la propiedad de los ángulos formados por una línea quebrada entre dos paralelas (comúnmente conocida como la regla de la 'M' o 'zig-zag').</li><li>Esta regla establece que el ángulo interno en el vértice de la quebrada (aquí \\(m^\\circ\\)) es igual a la suma de los ángulos alternos internos formados con las líneas paralelas que 'apuntan' hacia ese vértice.</li><li>Aunque el diagrama muestre \\(\\alpha\\) y \\(\\beta\\) como ángulos exteriores, la estructura de la pregunta y las opciones implican que \\(\\alpha\\) es el ángulo interior superior izquierdo y \\(\\beta\\) es el ángulo interior inferior derecho, de modo que sus sumas se dirigen hacia \\(m^\\circ\\). Por lo tanto, la relación es: \\(m = \\alpha + \\beta\\) (Ecuación 1).</li><li>También se nos da la ecuación: \\(\\alpha - \\beta = n\\) (Ecuación 2).</li><li>Tenemos un sistema de dos ecuaciones lineales. Sumando la Ecuación 1 y la Ecuación 2: \\((\\alpha + \\beta) + (\\alpha - \\beta) = m + n\\). Esto simplifica a \\(2\\alpha = m + n\\), lo que da \\(\\alpha = \\frac{m+n}{2}\\).</li><li>Restando la Ecuación 2 de la Ecuación 1: \\((\\alpha + \\beta) - (\\alpha - \\beta) = m - n\\). Esto simplifica a \\(2\\beta = m - n\\), lo que da \\(\\beta = \\frac{m-n}{2}\\).</li><li>Por lo tanto, los valores de \\(\\alpha\\) y \\(\\beta\\) son \\(\\frac{m+n}{2}\\) y \\(\\frac{m-n}{2}\\) respectivamente.</li></ol>",
+    "options": [
+      {
+        "text": "\\(2(m+n)\\) y \\(2(m-n)\\)"
+      },
+      {
+        "text": "\\(\\frac{m+2n}{2}\\) y \\(\\frac{m-2n}{2}\\)"
+      },
+      {
+        "text": "\\(\\frac{m+n}{2}\\) y \\(\\frac{m-n}{2}\\)"
+      },
+      {
+        "text": "\\(\\frac{2}{m+n}\\) y \\(\\frac{2}{m-n}\\)"
+      }
+    ],
+    "sourceFileName": "Gauss_Algebra_Funciones_Clase5.png",
+    "text": "En la figura adjunta \\(L_1 // L_2\\) y \\(\\alpha - \\beta = n\\). ¿Cuál es el valor de \\(\\alpha\\) y \\(\\beta\\), en grados respectivamente?",
+    "diagram": {
+      "type": "svg",
+      "code": "<svg viewBox=\"0 0 200 150\" xmlns=\"http://www.w3.org/2000/svg\">  <line x1=\"0\" y1=\"50\" x2=\"200\" y2=\"50\" stroke=\"black\" stroke-width=\"2\" />\n  <foreignObject x=\"170\" y=\"30.20690155029297\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">L 1</div>\n  </foreignObject>\n  <line x1=\"0\" y1=\"120\" x2=\"200\" y2=\"120\" stroke=\"black\" stroke-width=\"2\" />\n  <foreignObject x=\"173.83447265625\" y=\"121.29653930664062\" width=\"30\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">L 2</div>\n  </foreignObject>\n  <line x1=\"60.85635757446289\" y1=\"79.7930908203125\" x2=\"175.8907012939453\" y2=\"160.317138671875\" stroke=\"black\" stroke-width=\"2\" />\n  <foreignObject x=\"78.13787841796875\" y=\"28.62757682800293\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">\\(\\alpha\\)</div>\n  </foreignObject>\n  <foreignObject x=\"151.16552734375\" y=\"121.16551208496094\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">\\(\\beta\\)</div>\n  </foreignObject>\n  <foreignObject x=\"66.99312591552734\" y=\"62.744850158691406\" width=\"20\" height=\"20\">\n    <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-size: 12px; font-family: Arial, sans-serif; color: black; height: 100%; display: flex; align-items: center; justify-content: center;\">\\(m^\\circ\\)</div>\n  </foreignObject>\n  <line x1=\"32.0977668762207\" y1=\"139.22750854492188\" x2=\"58.939117431640625\" y2=\"79.7930908203125\" stroke=\"black\" stroke-dasharray=\"4 2\" stroke-width=\"1\" />\n  <line x1=\"59.897735595703125\" y1=\"77.87584686279297\" x2=\"94.40804290771484\" y2=\"-4.565436363220215\" stroke=\"black\" stroke-width=\"2\" />\n</svg>"
+    },
+    "originalQuestionNumber": "13",
+    "internalId": "q-1755052723036-0.26707922293411634",
+    "id": "q-ai-cat-1755053449610-2-0"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Primero, reescribimos el sistema de ecuaciones en la forma estándar \\(Ax + By = C\\):<br/>La primera ecuación, \\(3y - 2x = 1 - kx\\), se convierte en \\((k-2)x + 3y = 1\\).<br/>La segunda ecuación, \\(3x + 2y = 1 - ky\\), se convierte en \\(3x + (2+k)y = 1\\).</li><li>A continuación, calculamos el determinante \\(D\\) de la matriz de coeficientes:<br/>\\[D = \\begin{vmatrix} k-2 & 3 \\\\ 3 & 2+k \\end{vmatrix} = (k-2)(2+k) - (3)(3) = (k^2 - 4) - 9 = k^2 - 13\\]</li><li>También calculamos los determinantes \\(D_x\\) y \\(D_y\\):<br/>\\[D_x = \\begin{vmatrix} 1 & 3 \\\\ 1 & 2+k \\end{vmatrix} = 1(2+k) - 3(1) = 2+k-3 = k-1\\]<br/>\\[D_y = \\begin{vmatrix} k-2 & 1 \\\\ 3 & 1 \\end{vmatrix} = 1(k-2) - 1(3) = k-2-3 = k-5\\]</li><li>Para que un sistema tenga infinitas soluciones, deben cumplirse simultáneamente las condiciones \\(D=0\\), \\(D_x=0\\) y \\(D_y=0\\).</li><li>Si \\(D=0\\), entonces \\(k^2 - 13 = 0 \\Rightarrow k^2 = 13 \\Rightarrow k = \\pm\\sqrt{13}\\).</li><li>Si \\(D_x=0\\), entonces \\(k-1 = 0 \\Rightarrow k = 1\\).</li><li>Si \\(D_y=0\\), entonces \\(k-5 = 0 \\Rightarrow k = 5\\).</li><li>Como no existe un valor de \\(k\\) que satisfaga simultáneamente \\(k=\\pm\\sqrt{13}\\), \\(k=1\\) y \\(k=5\\), el sistema nunca tendrá infinitas soluciones.</li><li>Por lo tanto, la aseveración verdadera es que no existe un \\(k\\) para el cual el sistema tenga infinitas soluciones.</li></ol>",
+    "options": [
+      {
+        "text": "Si \\(k = \\sqrt{13}\\), el sistema tiene infinitas soluciones"
+      },
+      {
+        "text": "Si \\(k = 4\\), el sistema no tiene soluciones"
+      },
+      {
+        "text": "Si \\(k = 4\\), el sistema tiene infinitas soluciones"
+      },
+      {
+        "text": "No existe un \\(k\\) para el cual el sistema tenga infinitas soluciones"
+      }
+    ],
+    "sourceFileName": "quiz_page_1.png",
+    "text": "Dado el sistema de ecuación \\[\n\\begin{cases}\n3y - 2x = 1 - kx \\\\\n3x + 2y = 1 - ky\n\\end{cases}\n\\] con \\(x\\) e \\(y\\) las soluciones del sistema, ¿Cuál de las siguientes aseveraciones es verdadera?",
+    "originalQuestionNumber": "9",
+    "internalId": "q-1755052673580-0.09127413479604118",
+    "id": "q-ai-cat-1755053449610-2-1"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>Las ecuaciones dadas son: \n\\[\\begin{cases} x^3 - 8y^3 = 15 \\quad (1) \\\\ 3x^2 + 6xy + 12y^2 = 15 \\quad (2) \\end{cases}\n]\n.</li><li>Reconocemos que la ecuación (1) es una diferencia de cubos. Se puede reescribir como \n\\(x^3 - (2y)^3 = 15\\)\n.</li><li>Aplicamos la fórmula de la diferencia de cubos \n\\(a^3 - b^3 = (a-b)(a^2+ab+b^2)\\)\n, donde \n\\(a=x\\)\n y \n\\(b=2y\\)\n. Así, \n\\(x^3 - (2y)^3 = (x - 2y)(x^2 + x(2y) + (2y)^2) = (x - 2y)(x^2 + 2xy + 4y^2) = 15\\)\n.</li><li>Ahora, examinamos la ecuación (2): \n\\(3x^2 + 6xy + 12y^2 = 15\\)\n. Podemos dividir toda la ecuación por 3 para simplificarla: \n\\(\\frac{3x^2 + 6xy + 12y^2}{3} = \\frac{15}{3}\\)\n, lo que resulta en \n\\(x^2 + 2xy + 4y^2 = 5\\)\n.</li><li>Observamos que la expresión \n\\(x^2 + 2xy + 4y^2\\)\n es exactamente el segundo factor de la diferencia de cubos.</li><li>Sustituimos el valor de \n\\(x^2 + 2xy + 4y^2 = 5\\)\n en la forma factorizada de la ecuación (1): \n\\((x - 2y)(5) = 15\\)\n.</li><li>Dividimos ambos lados por 5 para encontrar el valor de \n\\(x - 2y\\)\n: \n\\(x - 2y = \\frac{15}{5} = 3\\)\n.</li><li>La pregunta pide el valor de \n\\(2y - x\\)\n. Esto es simplemente el negativo de \n\\(x - 2y\\)\n.</li><li>Por lo tanto, \n\\(2y - x = -(x - 2y) = -(3) = -3\\)\n.</li></ol>",
+    "options": [
+      {
+        "text": "\\(3\\)"
+      },
+      {
+        "text": "\\(-3\\)"
+      },
+      {
+        "text": "\\(5\\)"
+      },
+      {
+        "text": "\\(-5\\)"
+      }
+    ],
+    "sourceFileName": "quiz_page.png",
+    "text": "Si \n\\[\\begin{cases} x^3 - 8y^3 = 15 \\\\ 3x^2 + 6xy + 12y^2 = 15 \\end{cases}\n]\n ¿Cuál es el valor de \n\\(2y - x\\)\n?",
+    "originalQuestionNumber": "3",
+    "internalId": "q-1755052653056-0.2896519939019305",
+    "id": "q-ai-cat-1755053449610-2-2"
+  },
+  {
+    "correct": 1,
+    "explanation": "<ol><li>De acuerdo con el enunciado, Vicente canceló con un total de \\(17\\) billetes. Si \\(x\\) es la cantidad de billetes de \\(V\\) e \\(y\\) es la cantidad de billetes de \\(D\\), entonces la primera ecuación del sistema es \\(x+y=17\\).</li><li>El valor total de la cuenta fue de \\(T\\) y la mesera le entregó \\(S\\) de vuelto. Esto significa que el monto que Vicente pagó fue el valor de la cuenta más el vuelto, es decir, \\(T+S\\).</li><li>El monto total que Vicente pagó con los billetes es la suma de los valores de los billetes de \\(V\\) y de \\(D\\). Por lo tanto, \\(Vx+Dy\\) representa el valor total pagado.</li><li>Igualando el monto pagado con el valor de la cuenta más el vuelto, obtenemos la segunda ecuación: \\(Vx+Dy=T+S\\).</li><li>Así, el sistema de ecuaciones que permite determinar las cantidades \\(x\\) e \\(y\\) es \\(\\begin{cases} x+y=17 \\\\ Vx+Dy=T+S \\end{cases}\\).</li></ol>",
+    "options": [
+      {
+        "text": "\\(\\begin{cases} x+y=17 \\\\ Vx+Dy=T-S \\end{cases}\\)"
+      },
+      {
+        "text": "\\(\\begin{cases} x+y=17 \\\\ Vx+Dy=T+S \\end{cases}\\)"
+      },
+      {
+        "text": "\\(\\begin{cases} x+y=\\frac{T-S}{17} \\\\ Vx+Vy=T \\end{cases}\\)"
+      },
+      {
+        "text": "\\(\\begin{cases} x+y=V+D \\\\ Vx+Dy=T-S \\end{cases}\\)"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "Vicente invita una parrillada a sus colegas y el valor total de la cuenta fue de \\(T\\), la que canceló con \\(17\\) billetes, de los cuales algunos eran de \\(V\\) y el resto de \\(D\\). Por dicho pago la mesera le entrega \\(S\\) de vuelto. Si Vicente pagó con \\(x\\) billetes de \\(V\\) e \\(y\\) billetes de \\(D\\), ¿cuál de los siguientes sistemas de ecuaciones permite determinar la cantidades \\(x\\) e \\(y\\) de billetes que canceló Vicente?",
+    "originalQuestionNumber": "4",
+    "internalId": "q-1755052650123-0.9258992545273633",
+    "id": "q-ai-cat-1755053449610-3-0"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Definimos \\( x \\) como la cantidad de antibióticos del tipo 1 (que valen \\( \\$1.800 \\)) e \\( y \\) como la cantidad de antibióticos del tipo 2 (que valen \\( \\$2.100 \\)).</li><li>El objetivo es comprar un total de 60 antibióticos, lo que nos da la ecuación: \\( x + y = 60 \\).</li><li>El objetivo es gastar exactamente \\( \\$108.000 \\), lo que nos da la ecuación: \\( 1800x + 2100y = 108000 \\).</li><li>De la primera ecuación, despejamos \\( y \\): \\( y = 60 - x \\).</li><li>Sustituimos esta expresión para \\( y \\) en la segunda ecuación: \\( 1800x + 2100(60 - x) = 108000 \\).</li><li>Resolvemos la ecuación para \\( x \\): \\( 1800x + 126000 - 2100x = 108000 \\) \\( -300x = 108000 - 126000 \\) \\( -300x = -18000 \\) \\( x = \\frac{-18000}{-300} \\) \\( x = 60 \\).</li><li>Sustituimos el valor de \\( x \\) en \\( y = 60 - x \\): \\( y = 60 - 60 = 0 \\).</li><li>Por lo tanto, debe comprar 60 antibióticos del tipo que vale \\( \\$1.800 \\) y 0 del tipo que vale \\( \\$2.100 \\).</li></ol>",
+    "options": [
+      {
+        "text": "23 de un tipo y 37 del otro tipo."
+      },
+      {
+        "text": "36 de un tipo y 24 del otro tipo."
+      },
+      {
+        "text": "35 de un tipo y 25 del otro tipo."
+      },
+      {
+        "text": "60 de un tipo y ninguna del otro tipo"
+      },
+      {
+        "text": "El Sr Chopper no puede lograr cumplir con su objetivo."
+      }
+    ],
+    "sourceFileName": "quiz_page_1",
+    "text": "El Sr Chopper ha entrado a una farmacia con el objetivo de gastar exactamente \\( \\$108.000 \\) en comprar 60 antibióticos. En la farmacia solo tienen de 2 tipos; uno vale \\( \\$1.800 \\) y el otro vale \\( \\$2.100 \\). ¿Cuántos antibióticos, de cada tipo, debe comprar en la farmacia, para cumplir su objetivo?",
+    "originalQuestionNumber": "7",
+    "internalId": "q-1755052661951-0.7514711684871624",
+    "id": "q-ai-cat-1755053449610-3-1"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Sean \\(S\\) la edad actual de Sebastián y \\(G\\) la edad actual de Gabriel.</li><li>Según el problema, la diferencia entre sus edades hoy es \\(P\\) años: \\(S - G = P\\) (Ecuación 1).</li><li>Hace un año, sus edades eran \\(S - 1\\) y \\(G - 1\\). La suma de sus edades hace un año era \\(2P\\) años: \\((S - 1) + (G - 1) = 2P\\).</li><li>Simplificando la segunda ecuación: \\(S + G - 2 = 2P \\Rightarrow S + G = 2P + 2\\) (Ecuación 2).</li><li>Para encontrar las edades, sumamos la Ecuación 1 y la Ecuación 2: \\((S - G) + (S + G) = P + (2P + 2)\\).</li><li>Esto nos da: \\(2S = 3P + 2 \\Rightarrow S = \\frac{3P + 2}{2}\\).</li><li>Para encontrar \\(G\\), restamos la Ecuación 1 de la Ecuación 2: \\((S + G) - (S - G) = (2P + 2) - P\\).</li><li>Esto nos da: \\(2G = P + 2 \\Rightarrow G = \\frac{P + 2}{2}\\).</li><li>Comparando \\(S = \\frac{3P + 2}{2}\\) y \\(G = \\frac{P + 2}{2}\\), dado que \\(P\\) es una diferencia de edad (por lo tanto, \\(P > 0\\)), \\(3P > P\\), lo que implica \\(S > G\\).</li><li>Por lo tanto, la edad del menor es \\(G = \\frac{P + 2}{2}\\) años, que también se puede escribir como \\(\\frac{P}{2} + 1\\) años.</li></ol>",
+    "options": [
+      {
+        "text": "\\(P - \\frac{1}{2}\\,\\text{años}\\)"
+      },
+      {
+        "text": "\\(P + \\frac{1}{2}\\,\\text{años}\\)"
+      },
+      {
+        "text": "\\(\\frac{P}{2} + 1\\,\\text{años}\\)"
+      },
+      {
+        "text": "\\(2P + 1\\,\\text{años}\\)"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "A la fecha de hoy, la diferencia entre las edades de Sebastián y Gabriel es de \\(P\\) años. Hace un año la suma de sus edades era igual a \\(2P\\) años. ¿Qué edad tiene el menor de estas \\(2\\) personas?",
+    "originalQuestionNumber": "15",
+    "internalId": "q-1755052664130-0.31804424307004764",
+    "id": "q-ai-cat-1755053449610-3-2"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Inicialmente, el barco navega \\(pq\\) millas. Esto se puede expresar como \\(10p+q\\), donde \\(p\\) es el dígito de las decenas y \\(q\\) el de las unidades.</li><li>Se nos dice que la suma de los dígitos es \\(8\\), por lo tanto, \\(p+q=8\\).</li><li>Posteriormente, el barco avanza \\(36\\) millas más. La distancia total recorrida desde el inicio es de \\(qp\\) millas. Esto se puede expresar como \\(10q+p\\).</li><li>Podemos establecer la ecuación: distancia inicial + \\(36\\) millas = distancia total. Es decir, \\((10p+q) + 36 = 10q+p\\).</li><li>Ahora tenemos un sistema de dos ecuaciones con dos incógnitas: \\(p+q=8\\) y \\(10p+q+36=10q+p\\).</li><li>Simplificamos la segunda ecuación: \\(9p - 9q = -36\\), que se reduce a \\(p-q = -4\\).</li><li>Resolvemos el sistema: \\(p+q=8\\) y \\(p-q=-4\\). Sumando ambas ecuaciones obtenemos \\(2p=4\\), lo que da \\(p=2\\).</li><li>Sustituyendo \\(p=2\\) en \\(p+q=8\\), obtenemos \\(2+q=8\\), lo que da \\(q=6\\).</li><li>La distancia total recorrida es \\(qp\\) millas, que corresponde a \\(10q+p = 10(6)+2 = 60+2 = 62\\) millas.</li></ol>",
+    "options": [
+      {
+        "text": "36 millas"
+      },
+      {
+        "text": "45 millas"
+      },
+      {
+        "text": "62 millas"
+      },
+      {
+        "text": "84 millas"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "El Going Merry es un barco pirata, que inicialmente ha navegado \\(pq\\) millas, donde \\(p\\) es el dígito de las decenas, \\(q\\) el dígito de las unidades, y la suma de los dígitos que componen dicho número es \\(8\\). Posteriormente, el Going Merry avanza \\(36\\) millas más hacia el norte, recorriendo un total de \\(qp\\) millas desde el inicio, y de las cuales \\(q\\) es el dígito de las decenas y \\(p\\) el dígito de las unidades. ¿Cuántas millas en total ha recorrido el Going Merry?",
+    "originalQuestionNumber": "5",
+    "internalId": "q-1755052650123-0.4758820013602113",
+    "id": "q-ai-cat-1755053449610-3-3"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Definir variables: Sea \\(D_T\\) el dinero de Tom y \\(D_S\\) el dinero de Steve.</li><li>Formular ecuaciones basadas en el problema: De la primera condición, \\(D_T = D_S + 3000\\). De la segunda condición, \\(D_S = \\frac{1}{2} D_T - 1200\\).</li><li>Resolver el sistema de ecuaciones. Sustituir la primera ecuación en la segunda: \\(D_S = \\frac{1}{2} (D_S + 3000) - 1200 \\Rightarrow D_S = \\frac{1}{2} D_S + 1500 - 1200 \\Rightarrow D_S = \\frac{1}{2} D_S + 300 \\Rightarrow \\frac{1}{2} D_S = 300 \\Rightarrow D_S = 600\\).</li><li>Calcular \\(D_T\\): \\(D_T = 600 + 3000 = 3600\\).</li><li>Comparar los valores: Steve tiene \\(600\\) y Tom tiene \\(3600\\).</li><li>Verificar las opciones: \\(\\frac{D_S}{D_T} = \\frac{600}{3600} = \\frac{1}{6}\\). Por lo tanto, Steve tiene la sexta parte del dinero de Tom.</li></ol>",
+    "options": [
+      {
+        "text": "Steve tiene 6 veces el dinero de Tom",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "Steve tiene la mitad el dinero de Tom",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "Steve tiene la tercera parte del dinero de Tom",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      },
+      {
+        "text": "Steve tiene la sexta parte del dinero de Tom",
+        "diagram": {
+          "code": "",
+          "type": "svg"
+        }
+      }
+    ],
+    "sourceFileName": "image.png",
+    "text": "Tom y Steve van de compras y pueden elegir entre 2 tiendas deportivas, al elegir la primera Tom gastaría \\(3.000\\) mas que Steve, en cambio si hubiesen entrado a la segunda tienda Steve gastaría \\(1.200\\) menos que la mitad de lo que gastaría Tom. ¿Cuál de las siguientes aseveraciones es verdadera sobre el dinero que tiene Steve con respecto a Tom?",
+    "originalQuestionNumber": "17",
+    "internalId": "q-1755052663175-0.7261825761244755",
+    "id": "q-ai-cat-1755053449610-3-4"
+  },
+  {
+    "correct": 3,
+    "explanation": "<ol><li>Definimos \\( M \\) como el precio de una mascarilla y \\( A \\) como el precio de un pote de alcohol gel. Sea \\( D \\) el dinero total que posee Jean Paul.</li><li>De la primera condición, \"si compra 3 mascarillas y 10 potes de alcohol gel le sobran \\( \\$2.700 \\)\", tenemos la ecuación: \\( D - (3M + 10A) = 2700 \\).</li><li>De la segunda condición, \"si compra 5 mascarillas, solo le alcanza para 2 potes de alcohol gel sobrándole \\( \\$100 \\)\", tenemos la ecuación: \\( D - (5M + 2A) = 100 \\).</li><li>De la tercera condición, \"6 potes de alcohol gel cuestan lo mismo que 1 mascarilla\", tenemos la relación: \\( M = 6A \\).</li><li>Sustituimos \\( M = 6A \\) en las dos primeras ecuaciones: Para la primera: \\( D - (3(6A) + 10A) = 2700 \\Rightarrow D - (18A + 10A) = 2700 \\Rightarrow D - 28A = 2700 \\). Para la segunda: \\( D - (5(6A) + 2A) = 100 \\Rightarrow D - (30A + 2A) = 100 \\Rightarrow D - 32A = 100 \\).</li><li>Restamos la segunda nueva ecuación de la primera: \\( (D - 28A) - (D - 32A) = 2700 - 100 \\Rightarrow 4A = 2600 \\Rightarrow A = 650 \\).</li><li>Sustituimos el valor de \\( A \\) en \\( D - 28A = 2700 \\): \\( D - 28(650) = 2700 \\Rightarrow D - 18200 = 2700 \\Rightarrow D = 2700 + 18200 \\Rightarrow D = 20900 \\).</li><li>Por lo tanto, Jean Paul posee \\( \\$20.900 \\).</li></ol>",
+    "options": [
+      {
+        "text": "\\( \\$3.900 \\)"
+      },
+      {
+        "text": "\\( \\$18.200 \\)"
+      },
+      {
+        "text": "\\( \\$20.800 \\)"
+      },
+      {
+        "text": "\\( \\$20.900 \\)"
+      }
+    ],
+    "sourceFileName": "quiz_page_1",
+    "text": "Jean Paul ha decidido comprar mascarillas y potes de alcohol gel. Si compra 3 mascarillas y 10 potes de alcohol gel le sobran \\( \\$2.700 \\), pero si compra 5 mascarillas, solo le alcanza para 2 potes de alcohol gel sobrándole \\( \\$100 \\). Si sabemos que 6 potes de alcohol gel cuestan lo mismo que 1 mascarilla. ¿Cuánto dinero posee Jean Paul?",
+    "originalQuestionNumber": "6",
+    "internalId": "q-1755052661951-0.6650855915552872",
+    "id": "q-ai-cat-1755053449610-3-5"
+  },
+  {
+    "correct": 2,
+    "explanation": "<ol><li>Definamos las variables iniciales: sea P el número inicial de papas y Z el número inicial de zanahorias. El problema establece que inicialmente hay \\(p\\) papas y \\(3z\\) zanahorias, por lo que \\(P = p\\) y \\(Z = 3z\\). El total inicial de verduras es \\(P + Z = p + 3z\\).</li><li>La primera condición es: \"Si se saca la quinta parte de las zanahorias, entonces el saco queda con un total de \\(70\\) verduras.\" Las zanahorias restantes son \\(Z - \\frac{1}{5}Z = \\frac{4}{5}Z\\). Entonces, \\(P + \\frac{4}{5}Z = 70\\). Sustituyendo \\(P=p\\) y \\(Z=3z\\): \\(p + \\frac{4}{5}(3z) = 70 \\Rightarrow p + \\frac{12z}{5} = 70\\). Multiplicando por \\(5\\) para eliminar el denominador: \\(5p + 12z = 350\\) (Ecuación 1).</li><li>La segunda condición es: \"En cambio, si se agrega un \\(50\\%\\) del total de papas y se quitan \\(2\\) zanahorias, entonces el saco queda con un total de \\(93\\) verduras.\" Las papas aumentan a \\(P + 0.5P = 1.5P\\). Las zanahorias disminuyen a \\(Z - 2\\). Entonces, \\(1.5P + (Z - 2) = 93\\). Sustituyendo \\(P=p\\) y \\(Z=3z\\): \\(1.5p + (3z - 2) = 93 \\Rightarrow 1.5p + 3z = 95\\). Multiplicando por \\(2\\) para trabajar con enteros: \\(3p + 6z = 190\\) (Ecuación 2).</li><li>Ahora tenemos un sistema de dos ecuaciones con dos incógnitas: \\(5p + 12z = 350\\) y \\(3p + 6z = 190\\).</li><li>Para resolver el sistema, podemos multiplicar la Ecuación 2 por \\(2\\): \\(2(3p + 6z) = 2(190) \\Rightarrow 6p + 12z = 380\\) (Ecuación 3).</li><li>Restamos la Ecuación 1 de la Ecuación 3: \\((6p + 12z) - (5p + 12z) = 380 - 350 \\Rightarrow p = 30\\).</li><li>Sustituimos el valor de \\(p = 30\\) en la Ecuación 2: \\(3(30) + 6z = 190 \\Rightarrow 90 + 6z = 190 \\Rightarrow 6z = 100 \\Rightarrow z = \\frac{100}{6} = \\frac{50}{3}\\).</li><li>El total inicial de verduras era \\(p + 3z\\). Sustituimos los valores encontrados: \\(30 + 3\\left(\\frac{50}{3}\\right) = 30 + 50 = 80\\).</li><li>Por lo tanto, inicialmente había \\(80\\) verduras en el saco.</li></ol>",
+    "options": [
+      {
+        "text": "40 verduras"
+      },
+      {
+        "text": "70 verduras"
+      },
+      {
+        "text": "80 verduras"
+      },
+      {
+        "text": "81 verduras"
+      }
+    ],
+    "sourceFileName": "image1.png",
+    "text": "En un saco solo hay papas y zanahorias. De estas \\(p\\) son papas y \\(3z\\) son zanahorias. Si se saca la quinta parte de las zanahorias, entonces el saco queda con un total de \\(70\\) verduras. En cambio, si se agrega un \\(50\\%\\) del total de papas y se quitan \\(2\\) zanahorias, entonces el saco queda con un total de \\(93\\) verduras. ¿Cuál es el total de verduras que había inicialmente en el saco?",
+    "originalQuestionNumber": "14",
+    "internalId": "q-1755052664130-0.3255790603424017",
+    "id": "q-ai-cat-1755053449610-3-6"
+  },
+  {
+    "correct": 0,
+    "explanation": "<ol><li>Sea el volumen total de la piscina como V. Sean las eficiencias iniciales de las llaves A y B como \\(r_A\\) y \\(r_B\\) respectivamente.</li><li>En marzo, ambas llaves llenan la piscina en 6 horas: \\((r_A + r_B) \\times 6 = V \\Rightarrow r_A + r_B = \\frac{V}{6}\\) (Ecuación 1).</li><li>En abril, la eficiencia de la llave A se duplica a \\(2r_A\\), mientras que la de la llave B se mantiene en \\(r_B\\). La piscina se llena en 4 horas: \\((2r_A + r_B) \\times 4 = V \\Rightarrow 2r_A + r_B = \\frac{V}{4}\\) (Ecuación 2).</li><li>Restando la Ecuación 1 de la Ecuación 2: \\((2r_A + r_B) - (r_A + r_B) = \\frac{V}{4} - \\frac{V}{6}\\).</li><li>Esto simplifica a \\(r_A = \\frac{3V - 2V}{12} = \\frac{V}{12}\\). Esta es la eficiencia inicial de la llave A.</li><li>En mayo, la llave B no funciona. Se asume que la llave A mantiene su eficiencia duplicada de abril. Por lo tanto, la eficiencia de la llave A es \\(2r_A = 2 \\times \\frac{V}{12} = \\frac{V}{6}\\).</li><li>El tiempo que tarda solo la llave A en llenar la piscina es el volumen total dividido por la nueva eficiencia de A: Tiempo \\(= \\frac{V}{2r_A} = \\frac{V}{V/6} = 6\\) horas.</li></ol>",
+    "options": [
+      {
+        "text": "6 horas"
+      },
+      {
+        "text": "8 horas"
+      },
+      {
+        "text": "12 horas"
+      },
+      {
+        "text": "16 horas"
+      }
+    ],
+    "sourceFileName": "Gauss_Algebra_Funciones_Clase5.png",
+    "text": "En marzo dos llaves \\(A\\) y \\(B\\), llenan una piscina en \\(6\\) horas, si ambas se abren al mismo tiempo. Si luego de la visita de un gasfíter en abril quien realiza unos ajustes, de manera que la llave \\(A\\) dobla su eficiencia, mientras que la llave \\(B\\) se mantiene en las mismas condiciones, por lo que ahora la misma piscina se llena solo en \\(4\\) horas. Si en el mes de mayo la llave \\(B\\) no funciona, ¿cuánto demorara en llenar la misma piscina solo la llave \\(A\\)?",
+    "originalQuestionNumber": "12",
+    "internalId": "q-1755052723036-0.4459106592055341",
+    "id": "q-ai-cat-1755053449610-3-7"
+  }
+];
+        const categories = [
+  {
+    "id": "ai-cat-1755053449610-0",
+    "title": "Conceptos Fundamentales y Clasificación de Sistemas",
+    "description": "<p>Esta sección se enfoca en comprender la naturaleza de los sistemas de ecuaciones lineales y cómo determinar el tipo de solución que poseen (única, infinitas o ninguna). Es crucial identificar las condiciones que deben cumplir los coeficientes para cada caso. Para un sistema de la forma:</p>\\[ \\begin{cases} a_1x + b_1y = c_1 \\\\ a_2x + b_2y = c_2 \\end{cases} \\]<ul><li>Para una <strong>solución única</strong>, se debe cumplir que \\(\\frac{a_1}{a_2} \\neq \\frac{b_1}{b_2}\\). Esto significa que las líneas se intersecan en un solo punto.</li><li>Para <strong>infinitas soluciones</strong> (o sistema compatible indeterminado), se cumple que \\(\\frac{a_1}{a_2} = \\frac{b_1}{b_2} = \\frac{c_1}{c_2}\\). Las líneas son coincidentes.</li><li>Para <strong>ninguna solución</strong> (o sistema incompatible), se cumple que \\(\\frac{a_1}{a_2} = \\frac{b_1}{b_2} \\neq \\frac{c_1}{c_2}\\). Las líneas son paralelas y distintas.</li></ul><p>Recuerda que estas condiciones son clave para resolver problemas que piden encontrar valores de parámetros que determinen el tipo de solución.</p>",
+    "summaryKey": "ai-cat-1755053449610-0",
+    "problem_ids": [
+      "q-ai-cat-1755053449610-0-0",
+      "q-ai-cat-1755053449610-0-1",
+      "q-ai-cat-1755053449610-0-2",
+      "q-ai-cat-1755053449610-0-3",
+      "q-ai-cat-1755053449610-0-4",
+      "q-ai-cat-1755053449610-0-5",
+      "q-ai-cat-1755053449610-0-6"
+    ]
+  },
+  {
+    "id": "ai-cat-1755053449610-1",
+    "title": "Métodos de Resolución y Manipulación Algebraica",
+    "description": "<p>Aquí pondrás en práctica tus habilidades para resolver sistemas de ecuaciones lineales usando los métodos principales. La clave es la <strong>manipulación algebraica</strong> precisa para aislar las variables.</p><strong>Métodos Comunes:</strong><ul><li><strong>Sustitución:</strong> Despeja una variable de una ecuación y sustitúyela en la otra.</li><li><strong>Eliminación (o Reducción):</strong> Multiplica una o ambas ecuaciones por constantes para que los coeficientes de una variable sean opuestos, luego súmalas para eliminar esa variable.</li><li><strong>Igualación:</strong> Despeja la misma variable de ambas ecuaciones e iguala las expresiones resultantes.</li></ul><p>Es fundamental manejar coeficientes de diferentes tipos (fracciones, decimales periódicos, radicales o parámetros) y simplificar expresiones algebraicas complejas para llegar a la solución correcta. Recuerda convertir decimales periódicos a fracciones (ej., \\(0.\\overline{3} = 3/9 = 1/3\\)).</p>",
+    "summaryKey": "ai-cat-1755053449610-1",
+    "problem_ids": [
+      "q-ai-cat-1755053449610-1-0",
+      "q-ai-cat-1755053449610-1-1",
+      "q-ai-cat-1755053449610-1-2",
+      "q-ai-cat-1755053449610-1-3",
+      "q-ai-cat-1755053449610-1-4",
+      "q-ai-cat-1755053449610-1-5",
+      "q-ai-cat-1755053449610-1-6"
+    ]
+  },
+  {
+    "id": "ai-cat-1755053449610-2",
+    "title": "Sistemas de Ecuaciones No Lineales y Geométricos",
+    "description": "<p>Esta sección presenta desafíos que van más allá de los sistemas lineales estándar. Aquí encontrarás problemas que requieren:</p><ul><li><strong>Identificación de patrones algebraicos:</strong> Reconocer y aplicar identidades notables, como la suma o diferencia de cubos (ej., \\(a^3 - b^3 = (a-b)(a^2+ab+b^2)\\)), para simplificar sistemas no lineales.</li><li><strong>Modelado a partir de geometría:</strong> Traducir relaciones geométricas (como las propiedades de ángulos entre líneas paralelas) en un sistema de ecuaciones lineales. A menudo, necesitarás recordar propiedades básicas de geometría para establecer la segunda ecuación necesaria.</li><li><strong>Análisis avanzado de sistemas con parámetros:</strong> Evaluar afirmaciones sobre la naturaleza de las soluciones de un sistema donde los parámetros influyen directamente en la estructura y dependencias de las ecuaciones.</li></ul><p>La capacidad de transformar un problema a una forma resoluble es clave en este nivel.</p>",
+    "summaryKey": "ai-cat-1755053449610-2",
+    "problem_ids": [
+      "q-ai-cat-1755053449610-2-0",
+      "q-ai-cat-1755053449610-2-1",
+      "q-ai-cat-1755053449610-2-2"
+    ]
+  },
+  {
+    "id": "ai-cat-1755053449610-3",
+    "title": "Problemas de Aplicación y Modelado",
+    "description": "<p>Esta es la sección de aplicación práctica, donde la habilidad principal es traducir escenarios del mundo real en un sistema de ecuaciones matemáticas y luego resolverlo. Cada problema requiere:</p><ol><li><strong>Definir claramente las variables:</strong> Asigna letras a las cantidades desconocidas.</li><li><strong>Establecer las ecuaciones:</strong> Formula una o más ecuaciones basadas en la información proporcionada en el problema. Busca palabras clave que indiquen relaciones (suma, diferencia, \"el doble de\", \"la mitad de\", porcentajes, etc.).</li><li><strong>Resolver el sistema:</strong> Aplica los métodos de resolución que dominas.</li><li><strong>Interpretar la solución:</strong> Asegúrate de que tu respuesta tenga sentido en el contexto del problema original.</li></ol><p>Prepárate para problemas de edades, cantidades, mezclas, rendimiento de trabajo o incluso manipulación de números de varias cifras (donde un número \\(pq\\) se expresa como \\(10p + q\\)).</p>",
+    "summaryKey": "ai-cat-1755053449610-3",
+    "problem_ids": [
+      "q-ai-cat-1755053449610-3-0",
+      "q-ai-cat-1755053449610-3-1",
+      "q-ai-cat-1755053449610-3-2",
+      "q-ai-cat-1755053449610-3-3",
+      "q-ai-cat-1755053449610-3-4",
+      "q-ai-cat-1755053449610-3-5",
+      "q-ai-cat-1755053449610-3-6",
+      "q-ai-cat-1755053449610-3-7"
+    ]
+  }
+];
+
+        const problemsById = {};
+        allProblemsData.forEach(p => { problemsById[p.id] = p; });
+        
+        let currentQuizProblems = [];
+        let currentCategory = null;
+        let completedCategories = JSON.parse(localStorage.getItem('completedQuizCategories')) || {};
+        let currentProblemIndex = 0;
+        let score = 0;
+        
+        const categorySelectionScreen = document.getElementById('category-selection-screen');
+        const categoryListEl = document.getElementById('category-list');
+        const overallProgressContainer = document.getElementById('overall-progress-container');
+        const overallScoreEl = document.getElementById('overall-score');
+        const showFinalResultsBtn = document.getElementById('show-final-results-btn');
+        const quizWrapperEl = document.getElementById('quiz-wrapper');
+        const summaryContainerEl = document.getElementById('summary-container');
+        const summaryContinueBtn = document.getElementById('summary-continue-btn');
+        const quizContainerEl = document.getElementById('quiz-container');
+        const headerEl = document.getElementById('problem-header');
+        const questionEl = document.getElementById('question-container');
+        const graphEl = document.getElementById('graph-container');
+        const optionsEl = document.getElementById('options-container');
+        const feedbackEl = document.getElementById('feedback-container');
+        const nextButton = document.getElementById('next-button');
+        const progressBar = document.getElementById('progress-bar');
+        const scoreCounterEl = document.getElementById('score-counter');
+        const finalScreenEl = document.getElementById('final-screen');
+        const backToMenuBtn = document.getElementById('back-to-menu-btn');
+
+        function renderCategoryScreen() {
+            categoryListEl.innerHTML = '';
+            let totalCompleted = 0;
+            let totalPossibleScore = 0;
+            let totalUserScore = 0;
+
+            categories.forEach(cat => {
+                const li = document.createElement('li');
+                li.className = 'category-item';
+                li.dataset.categoryId = cat.id;
+                
+                const catProgress = completedCategories[cat.id];
+                let progressHTML = '';
+                if(catProgress) {
+                    li.classList.add('completed');
+                    if (catProgress.total > 0) {
+                        progressHTML = `<div class="progress-info">Completado: ${catProgress.score}/${catProgress.total}</div>`;
+                    }
+                    totalCompleted++;
+                    totalUserScore += catProgress.score;
+                    totalPossibleScore += cat.problem_ids.length;
+                }
+
+                li.innerHTML = `<h3>${cat.title}</h3><p>${cat.description.replace(/<[^>]*>?/gm, '').substring(0, 100)}...</p>${progressHTML}`;
+                li.onclick = () => {
+                    if (!li.classList.contains('completed')) {
+                        startCategory(cat.id);
+                    }
+                };
+                categoryListEl.appendChild(li);
+            });
+
+            if (Object.keys(completedCategories).length > 0) {
+                overallProgressContainer.classList.remove('hidden');
+                overallScoreEl.textContent = `Puntaje total: ${totalUserScore} de ${totalPossibleScore} correctas. Secciones completadas: ${totalCompleted} de ${categories.length}.`;
+            } else {
+                 overallProgressContainer.classList.add('hidden');
+            }
+
+            if (totalCompleted === categories.length && categories.length > 0) {
+                showFinalResultsBtn.classList.remove('hidden');
+            } else {
+                showFinalResultsBtn.classList.add('hidden');
+            }
+
+            quizWrapperEl.classList.add('hidden');
+            categorySelectionScreen.classList.remove('hidden');
+        }
+
+        function startCategory(categoryId) {
+            currentCategory = categories.find(c => c.id === categoryId);
+            if (!currentCategory) return;
+            
+            categorySelectionScreen.classList.add('hidden');
+            quizWrapperEl.classList.remove('hidden');
+
+            currentQuizProblems = currentCategory.problem_ids.map(id => problemsById[id]);
+            currentProblemIndex = 0;
+            score = 0;
+            
+            showSummary(currentCategory.id);
+        }
+
+        function showSummary(summaryKey) {
+            const summary = summaries[summaryKey];
+            if (!summary) {
+                 summaryContinueBtn.onclick(); return;
+            }
+            
+            const summaryTitleEl = document.getElementById('summary-title');
+            const keyConceptsEl = document.getElementById('summary-key-concepts');
+            const tipsListEl = document.getElementById('summary-tips-list');
+    
+            summaryTitleEl.textContent = `Preparación para: ${summary.title}`;
+            keyConceptsEl.innerHTML = summary.key_concepts_html;
+            
+            tipsListEl.innerHTML = '';
+            summary.tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.textContent = tip;
+                tipsListEl.appendChild(li);
+            });
+            
+            renderMath();
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.add('hidden');
+            summaryContainerEl.classList.remove('hidden');
+        }
+
+        summaryContinueBtn.onclick = () => {
+            summaryContainerEl.classList.add('hidden');
+            if (currentQuizProblems && currentQuizProblems.length > 0) {
+                quizContainerEl.classList.remove('hidden');
+                renderProblem(currentProblemIndex);
+            } else {
+                endOfCategory();
+            }
+        };
+        
+        function renderProblem(index) {
+            optionsEl.innerHTML = '';
+            feedbackEl.style.display = 'none';
+            nextButton.classList.remove('visible');
+            graphEl.innerHTML = '';
+            optionsEl.className = '';
+
+            const problem = currentQuizProblems[index];
+            if (!problem) {
+                console.error("Could not find problem for index:", index, "in category:", currentCategory.title);
+                questionEl.innerHTML = "Error: No se pudo cargar la pregunta. Verifique que los datos sean correctos.";
+                return;
+            }
+
+            headerEl.textContent = `Pregunta ${index + 1} de ${currentQuizProblems.length}`;
+            questionEl.innerHTML = problem.text;
+            progressBar.style.width = `${((index) / currentQuizProblems.length) * 100}%`;
+            scoreCounterEl.textContent = `✅ Puntos: ${score}`;
+            
+            if (problem.diagram && problem.diagram.code) {
+                graphEl.style.display = 'block';
+                graphEl.innerHTML = problem.diagram.code;
+            } else {
+                graphEl.style.display = 'none';
+            }
+            
+            const optionsHaveDiagrams = problem.options.some(opt => opt.diagram && opt.diagram.code);
+
+            if (optionsHaveDiagrams) {
+                 optionsEl.className = 'options-grid-with-graphs';
+                 problem.options.forEach((opt, i) => createOptionBlock(opt, i));
+            } else {
+                 problem.options.forEach((opt, i) => createOptionButton(opt, i));
+            }
+            renderMath();
+        }
+        
+        function createOptionButton(option, index) {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.dataset.index = index;
+            button.innerHTML = `<span class="label">${String.fromCharCode(65 + index)})</span> <span class="value">${option.text || ''}</span>`;
+            button.onclick = handleOptionClick;
+            optionsEl.appendChild(button);
+        }
+        
+        function createOptionBlock(option, index) {
+            const optionBlock = document.createElement('div');
+            optionBlock.className = 'option-block-graph';
+            optionBlock.dataset.index = index;
+            optionBlock.onclick = handleOptionClick;
+            let diagramHTML = option.diagram ? `<div class="option-graph-canvas-container">${option.diagram.code}</div>` : '';
+            optionBlock.innerHTML = `<div class="label">${String.fromCharCode(65 + index)}) ${option.text || ''}</div> ${diagramHTML}`;
+            optionsEl.appendChild(optionBlock);
+        }
+
+        function handleOptionClick(event) {
+            const problem = currentQuizProblems[currentProblemIndex];
+            const selectedIndex = parseInt(event.currentTarget.dataset.index, 10);
+            const correctIndex = problem.correct;
+            
+            const correctButton = document.querySelector(`[data-index="${correctIndex}"]`);
+            if (correctButton) correctButton.classList.add('correct');
+            
+            let isAnswerCorrect = false;
+            const selectedButton = event.currentTarget;
+            if (selectedIndex === correctIndex) {
+                score++;
+                isAnswerCorrect = true;
+            } else {
+                selectedButton.classList.add('incorrect');
+            }
+            
+            scoreCounterEl.textContent = `✅ Puntos: ${score}`;
+            document.querySelectorAll('.option-button, .option-block-graph').forEach(btn => { btn.classList.add('disabled'); btn.onclick = null; });
+            progressBar.style.width = `${((currentProblemIndex + 1) / currentQuizProblems.length) * 100}%`;
+            
+            feedbackEl.className = isAnswerCorrect ? 'feedback-container correct' : 'feedback-container incorrect';
+            const feedbackTitle = isAnswerCorrect ? `<div id="feedback-title">${icons.check} Correcto</div>` : `<div id="feedback-title">${icons.x} Incorrecto</div>`;
+            feedbackEl.innerHTML = `${feedbackTitle}${problem.explanation}`;
+            
+            renderMath();
+            feedbackEl.style.display = 'block';
+            if (currentProblemIndex < currentQuizProblems.length - 1) { nextButton.textContent = 'Siguiente →'; } 
+            else { nextButton.textContent = 'Finalizar Sección'; }
+            nextButton.classList.add('visible');
+        }
+
+        nextButton.onclick = () => {
+            currentProblemIndex++;
+            if (currentProblemIndex < currentQuizProblems.length) {
+                renderProblem(currentProblemIndex);
+            } else {
+                endOfCategory();
+            }
+        };
+        
+        function endOfCategory() {
+            completedCategories[currentCategory.id] = {
+                score: score,
+                total: currentQuizProblems.length
+            };
+            localStorage.setItem('completedQuizCategories', JSON.stringify(completedCategories));
+            
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.remove('hidden');
+
+            const percentage = currentQuizProblems.length > 0 ? Math.round((score / currentQuizProblems.length) * 100) : 100;
+            document.getElementById('final-title').textContent = `Sección Completada: ${currentCategory.title}`;
+            document.getElementById('final-message').textContent = currentQuizProblems.length > 0 ? `¡Gran trabajo! Has completado esta sección.` : `¡Concepto explorado! Ahora puedes continuar con la siguiente sección.`;
+            document.getElementById('final-score').textContent = currentQuizProblems.length > 0 ? `${score} / ${currentQuizProblems.length}` : '✔';
+            const finalPercentageEl = document.getElementById('final-percentage');
+            if (currentQuizProblems.length > 0) {
+                finalPercentageEl.textContent = `(${percentage}%)`;
+                finalPercentageEl.style.color = percentage >= 60 ? 'var(--success-color)' : 'var(--danger-color)';
+            } else {
+                finalPercentageEl.textContent = '';
+            }
+            backToMenuBtn.textContent = 'Volver al Menú';
+            backToMenuBtn.onclick = () => {
+                finalScreenEl.classList.add('hidden');
+                renderCategoryScreen();
+            };
+        }
+        
+        showFinalResultsBtn.onclick = () => {
+            categorySelectionScreen.classList.add('hidden');
+            quizWrapperEl.classList.remove('hidden');
+
+            summaryContainerEl.classList.add('hidden');
+            quizContainerEl.classList.add('hidden');
+            finalScreenEl.classList.remove('hidden');
+
+            let totalScore = 0;
+            let totalProblems = 0;
+            Object.values(completedCategories).forEach(cat => {
+                totalScore += cat.score;
+                if (cat.total > 0) {
+                    totalProblems += cat.total;
+                }
+            });
+
+            const percentage = totalProblems > 0 ? Math.round((totalScore / totalProblems) * 100) : 0;
+            document.getElementById('final-title').textContent = '¡Resumen Final del Desafío!';
+            document.getElementById('final-message').textContent = '¡Felicidades! Has completado todos los temas. Este es tu rendimiento general.';
+            document.getElementById('final-score').textContent = `${totalScore} / ${totalProblems}`;
+            const finalPercentageEl = document.getElementById('final-percentage');
+            finalPercentageEl.textContent = `(${percentage}%)`;
+            finalPercentageEl.style.color = percentage >= 60 ? 'var(--success-color)' : 'var(--danger-color)';
+            
+            backToMenuBtn.textContent = 'Reiniciar Desafío';
+            backToMenuBtn.onclick = () => {
+                localStorage.removeItem('completedQuizCategories');
+                window.location.reload();
+            };
+        };
+        
+        renderCategoryScreen();
+        renderMath();
+    });
+    </script>
+</body>
+</html>
+  
